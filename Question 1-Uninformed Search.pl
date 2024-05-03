@@ -75,4 +75,4 @@ main:-
     print_grid(Grid),
     writeln(''),
     member(X,Grid),
-    trySearchStartPoint(Grid,X).
+    trySearchStartPoint(Grid,X),!.
