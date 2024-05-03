@@ -82,7 +82,7 @@ trySearchStartPoint([FirstNode|Nodes], Grid) :-
 main:-
     grid_size(N, M),
     create_grid(N, M, Grid),
-    %print_grid(Grid),
+    print_grid(Grid),
     write('Done.'),
     trySearchStartPoint(Grid, Grid),
     writeln('Done.').
