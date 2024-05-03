@@ -93,8 +93,8 @@ getBestState(Open, BestChild, Rest):-
 findMin([X], X):- !.
 findMin([Head|T], Min):-
     findMin(T, TmpMin),
-    Head = [_,_,_,HeadH,HeadF],
-    TmpMin = [_,_,_,TmpH,TmpF],
+    Head = [_, _, _, _, HeadF],
+    TmpMin = [_, _, _, _, TmpF],
     (TmpF < HeadF -> Min = TmpMin ; Min = Head).
 
 % Define the printSolution function
