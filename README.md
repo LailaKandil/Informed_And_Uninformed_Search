@@ -1,1 +1,1 @@
-Informed and uniformed search algorithms of DFS and A* search to find the cycle in a grid
+Informed and Uniformed Search Algorithms of DFS and A* Search to find the cycle/path in a grid.
