@@ -27,62 +27,52 @@ create_row(CurrentRow,M, Acc, Row) :-
     create_row(CurrentRow,M1, NewAcc, Row).
 
 
-print_grid([]).
-print_grid([Row|Rows]) :-
-    print_row(Row, 1),
-    nl,
-    print_grid(Rows).
 
-print_row([], _).
-print_row([Color|Colors], Position) :-
+print_grid([]).
+print_grid([Color|Colors]) :-
     write('('),
     write(Color),
     write(') '),
-    NextPosition is Position + 1,
-    print_row(Colors, NextPosition).
+    print_grid(Colors).
 
 
 % Finding the cycle
 % Define valid moves within the grid bound
-% Define the moves
 move((X,Y,CurrentNodeColor), (NX, Y, CurrentNodeColor)) :- NX is X + 1. % Move down
 move((X,Y,CurrentNodeColor), (NX, Y, CurrentNodeColor)) :- NX is X - 1. % Move up
 move((X,Y,CurrentNodeColor), (X,NY,CurrentNodeColor)) :- NY is Y - 1. % Move left
-%move([X, Y], [NX, Y]) :- NX is X - 1. % Move up
-
 move((X,Y,CurrentNodeColor), (X, NY, CurrentNodeColor)) :- NY is Y + 1. % Move right
-%move([X, Y], [X, NY]) :- NY is Y - 1. % Move left
 
 
-% Depth-first search to find color cycle meeting specified conditions
-search(CurrentState, Grid, Visited, Path, Parent) :-
-    move(CurrentState, NextState),
-    not(member(NextState, Parent)), % replace with not equal
-    member(NextState, Grid), % is a valid next state
-    member(NextState, Visited),
-	write("Search is complete!"), nl,
-    write(Path), nl.
-
-search(CurrentState, Grid, Visited, Path, Parent) :-
+search(CurrentState, Grid, Visited, Path, Parent, Goal) :-
     move(CurrentState, NextState),
     not(member(NextState, Parent)), % replace with not equal
     member(NextState, Grid),
     not(member(NextState, Visited)),
     append(Visited, [NextState], NewVisited),
     append(Path, [NextState], NewPath),
-    search(NextState, Grid, NewVisited, NewPath, [CurrentState]).
+    search(NextState, Grid, NewVisited, NewPath, [CurrentState], Goal).
 
-trySearchStartPoint([],_).
-trySearchStartPoint([FirstNode|Nodes], Grid) :-
-    %write(Nodes), nl,
-    trySearchStartPoint(Nodes, Grid),
-    search(FirstNode, Grid, [FirstNode], [FirstNode], []).
+search(CurrentState, Grid, Visited, Path, Parent, Goal) :-
+    move(CurrentState, Goal),
+    not(member(Goal, Parent)), % replace with not equal
+    member(Goal, Grid), % is a valid next state
+    member(Goal, Visited),
+	write("Search is complete!"), nl,
+    write(Path).
+
+
+
+trySearchStartPoint(Grid,FirstNode) :-
+    search(FirstNode, Grid, [FirstNode], [FirstNode], [], FirstNode).
+
 
 %Main Predicate
 main:-
     grid_size(N, M),
     create_grid(N, M, Grid),
+    writeln('Printing grid'),
     print_grid(Grid),
-    write('Done.'),
-    trySearchStartPoint(Grid, Grid),
-    writeln('Done.').
+    writeln(''),
+    member(X,Grid),
+    trySearchStartPoint(Grid,X).
