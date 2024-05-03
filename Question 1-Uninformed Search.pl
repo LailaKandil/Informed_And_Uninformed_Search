@@ -27,7 +27,6 @@ create_row(CurrentRow,M, Acc, Row) :-
     create_row(CurrentRow,M1, NewAcc, Row).
 
 
-
 print_grid([]).
 print_grid([Color|Colors]) :-
     write('('),
@@ -46,21 +45,19 @@ move((X,Y,CurrentNodeColor), (X, NY, CurrentNodeColor)) :- NY is Y + 1. % Move r
 
 search(CurrentState, Grid, Visited, Path, Parent, Goal) :-
     move(CurrentState, NextState),
-    not(member(NextState, Parent)), % replace with not equal
+    not(member(NextState, Parent)),
     member(NextState, Grid),
     not(member(NextState, Visited)),
     append(Visited, [NextState], NewVisited),
     append(Path, [NextState], NewPath),
     search(NextState, Grid, NewVisited, NewPath, [CurrentState], Goal).
 
-search(CurrentState, Grid, Visited, Path, Parent, Goal) :-
+search(CurrentState, _, _, Path, Parent, Goal) :-
     move(CurrentState, Goal),
-    not(member(Goal, Parent)), % replace with not equal
-    member(Goal, Grid), % is a valid next state
-    member(Goal, Visited),
+    not(member(Goal, Parent)),
+    append(Path, [Goal], NewPath),
 	write("Search is complete!"), nl,
-    write(Path).
-
+    write(NewPath).
 
 
 trySearchStartPoint(Grid,FirstNode) :-
