@@ -6,25 +6,24 @@ grid_size(N, M) :-
     read(M).
 
 create_grid(N, M, Grid) :-
-    create_grid(N, M, [], Grid).
+    create_grid(0,N, M, [], Grid).
 
-create_grid(0, _, Grid, Grid).
-create_grid(N, M, Acc, Grid) :-
-    create_row(N,M, [], Row),
-    append(Row,Acc, NewAcc),
-    N1 is N - 1,
-    create_grid(N1, M, NewAcc, Grid).
+create_grid(N,N, _, Grid, Grid).
+create_grid(CurrentRowNumber, N, M, Acc, Grid) :-
+    create_row(CurrentRowNumber,0,M, [], Row),
+    append(Acc, Row, NewAcc),
+    NewRowNumber is CurrentRowNumber + 1,
+    create_grid(NewRowNumber, N, M, NewAcc, Grid).
 
-create_row(_,0, Row, Row).
-create_row(CurrentRow,M, Acc, Row) :-
-    CurrentRow > 0,
-    M > 0,
-    format('Enter a color for position (~w, ~w) (red/yellow/blue): ', [CurrentRow, M]),
+create_row(_, M, M, OutputRow, OutputRow).
+create_row(CurrentRow, CurrentColumn, M, Acc, OutputRow) :-
+    CurrentColumn < M,
+    format('Enter a color for position (~w, ~w) (red/yellow/blue): ', [CurrentRow, CurrentColumn]),
     read(Color),
     (Color = red ; Color = yellow; Color = blue),
-    append([(CurrentRow,M,Color)],Acc, NewAcc),
-    M1 is M - 1,
-    create_row(CurrentRow,M1, NewAcc, Row).
+    append(Acc, [(CurrentRow,CurrentColumn,Color)], NewAcc),
+    NewCurrentColumn is CurrentColumn + 1,
+    create_row(CurrentRow, NewCurrentColumn, M, NewAcc, OutputRow).
 
 
 print_grid([]).
@@ -45,19 +44,24 @@ move((X,Y,CurrentNodeColor), (X, NY, CurrentNodeColor)) :- NY is Y + 1. % Move r
 
 search(CurrentState, Grid, Visited, Path, Parent, Goal) :-
     move(CurrentState, NextState),
-    not(member(NextState, Parent)),
+    not(member(NextState, Parent)), % replace with not equal
     member(NextState, Grid),
     not(member(NextState, Visited)),
     append(Visited, [NextState], NewVisited),
     append(Path, [NextState], NewPath),
     search(NextState, Grid, NewVisited, NewPath, [CurrentState], Goal).
 
-search(CurrentState, _, _, Path, Parent, Goal) :-
+search(CurrentState, Grid, Visited, Path, Parent, Goal) :-
     move(CurrentState, Goal),
-    not(member(Goal, Parent)),
-    append(Path, [Goal], NewPath),
+    not(member(Goal, Parent)), % replace with not equal
+    member(Goal, Grid), % is a valid next state
+    member(Goal, Visited),
 	write("Search is complete!"), nl,
-    write(NewPath).
+    write(Path).
+
+
+search(_, _, _, _, _, _) :-
+    write("No cycle found."), nl.
 
 
 trySearchStartPoint(Grid,FirstNode) :-
@@ -73,3 +77,24 @@ main:-
     writeln(''),
     member(X,Grid),
     trySearchStartPoint(Grid,X),!.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
